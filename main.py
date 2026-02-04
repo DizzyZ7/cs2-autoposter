@@ -1,16 +1,19 @@
 import asyncio
 import os
 from aiogram import Bot
-from dotenv import load_dotenv
 
-# Загружаем настройки
-load_dotenv()
+async def main():
+    # GitHub сам подставит эти данные из раздела Secrets
+    API_TOKEN = os.getenv("BOT_TOKEN")
+    CHANNEL_ID = os.getenv("CHANNEL_ID")
+    
+    if not API_TOKEN or not CHANNEL_ID:
+        print("Ошибка: Переменные BOT_TOKEN или CHANNEL_ID не найдены!")
+        return
 
-API_TOKEN = os.getenv("BOT_TOKEN")
-CHANNEL_ID = os.getenv("CHANNEL_ID")
-INTERVAL = 3600  # 1 час
+    bot = Bot(token=API_TOKEN)
 
-MESSAGE_TEXT = """
+    MESSAGE_TEXT = """
 🚨 Это реально произошло! 🚨
 После долгого ожидания игроки и трейдеры получили то, чего так не хватало — удобный сервис сделанный людьми, которые шарят за CS2 🎮💣
 
@@ -38,23 +41,19 @@ https://csboard.trade?ref=I9THBZPO
 Залетай, смотри, пробуй — трейдить в CS2 стало проще 🚀💥
 """
 
-async def main():
-    if not API_TOKEN:
-        print("Ошибка: Не указан BOT_TOKEN в переменных окружения!")
-        return
-        
-    bot = Bot(token=API_TOKEN)
-    print("Бот запущен...")
-    
-    while True:
-        try:
-            # Отправка в канал
-            await bot.send_message(chat_id=CHANNEL_ID, text=MESSAGE_TEXT.strip())
-            print("Пост успешно опубликован!")
-        except Exception as e:
-            print(f"Ошибка при отправке: {e}")
-        
-        await asyncio.sleep(INTERVAL)
+    try:
+        # Отправляем сообщение без превью ссылок (чтобы выглядело аккуратно)
+        await bot.send_message(
+            chat_id=CHANNEL_ID, 
+            text=MESSAGE_TEXT.strip(),
+            disable_web_page_preview=False
+        )
+        print("✅ Сообщение успешно опубликовано в канал!")
+    except Exception as e:
+        print(f"❌ Произошла ошибка: {e}")
+    finally:
+        # Закрываем сессию, чтобы GitHub Action завершился корректно
+        await bot.session.close()
 
 if __name__ == '__main__':
     asyncio.run(main())
