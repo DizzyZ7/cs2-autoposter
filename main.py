@@ -6,7 +6,7 @@ async def main():
     # Данные подтягиваются из настроек Secrets вашего репозитория
     API_TOKEN = os.getenv("BOT_TOKEN")
     CHANNEL_ID = os.getenv("CHANNEL_ID")
-    TOPIC_ID = 31 # ID темы в группе
+    TOPIC_ID = 21522 # ID темы в группе
 
     if not API_TOKEN or not CHANNEL_ID:
         print("Ошибка: Переменные BOT_TOKEN или CHANNEL_ID не настроены в Secrets!")
