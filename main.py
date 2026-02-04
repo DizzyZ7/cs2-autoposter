@@ -3,10 +3,12 @@ import os
 from aiogram import Bot
 
 async def main():
-    # GitHub сам подставит эти данные из раздела Secrets
+    # Данные из секретов GitHub
     API_TOKEN = os.getenv("BOT_TOKEN")
     CHANNEL_ID = os.getenv("CHANNEL_ID")
-    
+    # ID темы из твоей ссылки (https://t.me/buff163skinhub/31)
+    TOPIC_ID = 31 
+
     if not API_TOKEN or not CHANNEL_ID:
         print("Ошибка: Переменные BOT_TOKEN или CHANNEL_ID не найдены!")
         return
@@ -42,18 +44,18 @@ https://csboard.trade?ref=I9THBZPO
 """
 
     try:
-        # Отправляем сообщение без превью ссылок (чтобы выглядело аккуратно)
+        # Отправляем сообщение именно в нужную тему (thread)
         await bot.send_message(
             chat_id=CHANNEL_ID, 
             text=MESSAGE_TEXT.strip(),
+            message_thread_id=TOPIC_ID,
             disable_web_page_preview=False
         )
-        print("✅ Сообщение успешно опубликовано в канал!")
+        print(f"✅ Сообщение успешно отправлено в тему {TOPIC_ID}!")
     except Exception as e:
         print(f"❌ Произошла ошибка: {e}")
     finally:
-        # Закрываем сессию, чтобы GitHub Action завершился корректно
-        await bot.session.close()
+        await (await bot.get_session()).close()
 
 if __name__ == '__main__':
     asyncio.run(main())
