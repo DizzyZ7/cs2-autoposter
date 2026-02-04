@@ -3,19 +3,17 @@ import os
 from aiogram import Bot
 
 async def main():
-    # Данные из секретов GitHub
     API_TOKEN = os.getenv("BOT_TOKEN")
     CHANNEL_ID = os.getenv("CHANNEL_ID")
-    # ID темы из твоей ссылки (https://t.me/buff163skinhub/31)
     TOPIC_ID = 31 
 
     if not API_TOKEN or not CHANNEL_ID:
         print("Ошибка: Переменные BOT_TOKEN или CHANNEL_ID не найдены!")
         return
 
-    bot = Bot(token=API_TOKEN)
-
-    MESSAGE_TEXT = """
+    # Используем контекстный менеджер 'with', чтобы сессия закрывалась сама
+    async with Bot(token=API_TOKEN) as bot:
+        MESSAGE_TEXT = """
 🚨 Это реально произошло! 🚨
 После долгого ожидания игроки и трейдеры получили то, чего так не хватало — удобный сервис сделанный людьми, которые шарят за CS2 🎮💣
 
@@ -43,19 +41,18 @@ https://csboard.trade?ref=I9THBZPO
 Залетай, смотри, пробуй — трейдить в CS2 стало проще 🚀💥
 """
 
-    try:
-        # Отправляем сообщение именно в нужную тему (thread)
-        await bot.send_message(
-            chat_id=CHANNEL_ID, 
-            text=MESSAGE_TEXT.strip(),
-            message_thread_id=TOPIC_ID,
-            disable_web_page_preview=False
-        )
-        print(f"✅ Сообщение успешно отправлено в тему {TOPIC_ID}!")
-    except Exception as e:
-        print(f"❌ Произошла ошибка: {e}")
-    finally:
-        await (await bot.get_session()).close()
+        try:
+            await bot.send_message(
+                chat_id=CHANNEL_ID, 
+                text=MESSAGE_TEXT.strip(),
+                message_thread_id=TOPIC_ID,
+                disable_web_page_preview=False
+            )
+            print(f"✅ Сообщение успешно отправлено в тему {TOPIC_ID}!")
+        except Exception as e:
+            print(f"❌ Произошла ошибка: {e}")
+            # Принудительно завершаем с ошибкой для GitHub, если пост не ушел
+            exit(1)
 
 if __name__ == '__main__':
     asyncio.run(main())
