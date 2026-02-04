@@ -1,9 +1,10 @@
-name: Hourly Auto Post
+name: Daily Auto Post
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch: 
+    # 11:00 UTC соответствует 14:00 по МСК
+    - cron: '0 11 * * *'
+  workflow_dispatch: # Оставляем возможность запустить вручную для теста
 
 jobs:
   run_bot:
