@@ -2,13 +2,13 @@ name: Daily Auto Post
 
 on:
   schedule:
-    # 11:00 UTC соответствует 14:00 по МСК
-    - cron: '0 11 * * *'
-  workflow_dispatch: # Оставляем возможность запустить вручную для теста
+    - cron: '0 11 * * *'   # 14:00 МСК
+  workflow_dispatch:
 
 jobs:
   run_bot:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,5 +24,14 @@ jobs:
       - name: Run Python script
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+
+          CHANNEL_ID_1: ${{ secrets.CHANNEL_ID_1 }}
+          THREAD_ID_1: ${{ secrets.THREAD_ID_1 }}
+
+          CHANNEL_ID_2: ${{ secrets.CHANNEL_ID_2 }}
+          THREAD_ID_2: ${{ secrets.THREAD_ID_2 }}
+
+          CHANNEL_ID_3: ${{ secrets.CHANNEL_ID_3 }}
+          THREAD_ID_3: ${{ secrets.THREAD_ID_3 }}
+
         run: python main.py
