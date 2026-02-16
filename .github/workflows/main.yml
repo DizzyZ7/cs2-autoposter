@@ -23,15 +23,7 @@ jobs:
 
       - name: Run Python script
         env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-
-          CHANNEL_ID_1: ${{ secrets.CHANNEL_ID_1 }}
-          THREAD_ID_1: ${{ secrets.THREAD_ID_1 }}
-
-          CHANNEL_ID_2: ${{ secrets.CHANNEL_ID_2 }}
-          THREAD_ID_2: ${{ secrets.THREAD_ID_2 }}
-
-          CHANNEL_ID_3: ${{ secrets.CHANNEL_ID_3 }}
-          THREAD_ID_3: ${{ secrets.THREAD_ID_3 }}
+         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+         TARGETS: ${{ secrets.TARGETS }}
 
         run: python main.py
