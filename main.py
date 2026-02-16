@@ -1,9 +1,13 @@
-import asyncio
 import os
+import asyncio
 from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError
 
+# Получаем токен бота и список каналов/тем
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+TARGETS = os.getenv("TARGETS")
 
+# Текст для публикации
 MESSAGE_TEXT = """
 🚨 Это реально произошло! 🚨
 После долгого ожидания игроки и трейдеры получили то, чего так не хватало — удобный сервис сделанный людьми, которые шарят за CS2 🎮💣
@@ -24,75 +28,49 @@ https://csboard.trade?ref=I9THBZPO
 🔐 Вход через Google или Steam — быстро и безопасно 🛡️
 
 🎉 И это ещё не всё!
-В Telegram-канале проекта прямо сейчас разыгрывают нож 🔪🗡️ — https://t.me/csboardtrade/11 🎁🔥
+В Telegram-канале проекта прямо сейчас разыгрывают нож 🔪🗡️ —  https://t.me/csboardtrade/11 🎁🔥
 
 Но и это еще не всё ❌
-Между своими рефералаами я разыграю дополнительно ножик, так что не упусти возможность 😎
+Между своими рефералами я разыграю дополнительно ножик, так что не упусти возможность 😎
 
 Залетай, смотри, пробуй — трейдить в CS2 стало проще 🚀💥
 """
 
-
-def load_groups():
-    groups = []
-    index = 1
-
-    while True:
-        chat_id = os.getenv(f"CHANNEL_ID_{index}")
-        thread_id = os.getenv(f"THREAD_ID_{index}")
-
-        if not chat_id:
-            break
-
-        groups.append({
-            "chat_id": chat_id,
-            "thread_id": int(thread_id) if thread_id and thread_id.strip() else None
-        })
-
-        index += 1
-
-    return groups
-
-
-async def send_message(bot: Bot, chat_id: str, thread_id: int | None):
-    try:
-        if thread_id:
-            await bot.send_message(
-                chat_id=chat_id,
-                text=MESSAGE_TEXT.strip(),
-                message_thread_id=thread_id
-            )
-            print(f"✅ Отправлено в {chat_id} (тема {thread_id})")
-        else:
-            await bot.send_message(
-                chat_id=chat_id,
-                text=MESSAGE_TEXT.strip()
-            )
-            print(f"✅ Отправлено в {chat_id} (обычный чат)")
-    except TelegramAPIError as e:
-        print(f"❌ Ошибка в {chat_id}: {e}")
-
-
 async def main():
-    token = os.getenv("BOT_TOKEN")
-
-    if not token:
-        print("❌ BOT_TOKEN не найден")
+    if not BOT_TOKEN:
+        print("❌ BOT_TOKEN не задан!")
         return
 
-    groups = load_groups()
-
-    if not groups:
-        print("❌ Нет настроенных групп")
+    if not TARGETS:
+        print("❌ TARGETS не задан!")
         return
 
-    async with Bot(token=token) as bot:
-        tasks = [
-            send_message(bot, group["chat_id"], group["thread_id"])
-            for group in groups
-        ]
-        await asyncio.gather(*tasks)
+    targets_list = [t.strip() for t in TARGETS.strip().split("\n") if t.strip()]
+    if not targets_list:
+        print("❌ Нет ни одной группы в TARGETS!")
+        return
 
+    async with Bot(token=BOT_TOKEN) as bot:
+        for item in targets_list:
+            try:
+                if ":" in item:
+                    chat_id, thread_id = item.split(":")
+                    await bot.send_message(
+                        chat_id=chat_id.strip(),
+                        text=MESSAGE_TEXT.strip(),
+                        message_thread_id=int(thread_id.strip()),
+                        disable_web_page_preview=False
+                    )
+                    print(f"✅ Сообщение отправлено в {chat_id} (тема {thread_id})")
+                else:
+                    await bot.send_message(
+                        chat_id=item.strip(),
+                        text=MESSAGE_TEXT.strip(),
+                        disable_web_page_preview=False
+                    )
+                    print(f"✅ Сообщение отправлено в {item}")
+            except TelegramAPIError as e:
+                print(f"❌ Ошибка при отправке в {item}: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())
