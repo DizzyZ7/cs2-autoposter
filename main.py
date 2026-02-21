@@ -58,7 +58,7 @@ async def main():
                     await bot.send_message(
                         chat_id=chat_id.strip(),
                         text=MESSAGE_TEXT.strip(),
-                        message_thread_id=int(thread_id.strip()),
+                        reply_to_message_id=int(thread_id.strip()),
                         disable_web_page_preview=False
                     )
                     print(f"✅ Сообщение отправлено в {chat_id} (тема {thread_id})")
