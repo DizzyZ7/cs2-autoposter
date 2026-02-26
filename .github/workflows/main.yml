@@ -2,7 +2,7 @@ name: Daily Auto Post
 
 on:
   schedule:
-    - cron: '0 11 * * *'   # 14:00 МСК
+    - cron: '0 11 * * 1'   # 14:00 МСК
   workflow_dispatch:
 
 jobs:
